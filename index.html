@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+    />
+    <title>关键事务 · 闹钟提醒中心</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="app-sidebar">
+        <div class="brand">
+          <div class="brand-logo">
+            <span class="brand-dot main"></span>
+            <span class="brand-dot accent"></span>
+          </div>
+          <div class="brand-text">
+            <div class="brand-title">FocusClock</div>
+            <div class="brand-subtitle">关键事务 · 清晰掌控</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">今日概览</div>
+          <div class="today-summary" id="today-summary">
+            <!-- 动态填充 -->
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">提醒偏好</div>
+          <label class="toggle-row">
+            <span>到点弹出提醒</span>
+            <button class="switch" id="toggle-popup">
+              <span class="switch-knob"></span>
+            </button>
+          </label>
+          <label class="toggle-row">
+            <span>到点播放提示音</span>
+            <button class="switch" id="toggle-sound">
+              <span class="switch-knob"></span>
+            </button>
+          </label>
+          <small class="hint">
+            建议开启浏览器通知权限，以避免错过重要事项。
+          </small>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="clock" id="realtime-clock">-- : --</div>
+          <div class="clock-sub">保持专注的每一分钟，都值得被记录。</div>
+        </div>
+      </aside>
+
+      <main class="app-main">
+        <header class="app-header">
+          <div>
+            <h1>重要事务记录 / 闹钟提醒</h1>
+            <p class="app-header-sub">
+              用一个清晰的面板，管理你真正重要的事。
+            </p>
+          </div>
+          <div class="header-tags">
+            <span class="chip chip-soft">本地运行 · 数据仅存于此设备</span>
+            <span class="chip chip-primary">支持精确到分钟的提醒</span>
+          </div>
+        </header>
+
+        <section class="grid two-column">
+          <section class="card card-highlight">
+            <div class="card-header">
+              <h2>快速创建关键事务</h2>
+              <span class="pill pill-blue">新建提醒</span>
+            </div>
+            <form id="task-form" class="form">
+              <div class="form-row">
+                <label class="form-field">
+                  <span class="label">事务标题 *</span>
+                  <input
+                    type="text"
+                    id="task-title"
+                    placeholder="例如：给客户发项目汇报，或：23:00 前关掉燃气"
+                    required
+                    maxlength="60"
+                  />
+                </label>
+              </div>
+
+              <div class="form-row">
+                <label class="form-field">
+                  <span class="label">详细备注</span>
+                  <textarea
+                    id="task-notes"
+                    rows="3"
+                    placeholder="补充一些关键信息，例如：文件路径、联系人、检查清单等（可选）"
+                  ></textarea>
+                </label>
+              </div>
+
+              <div class="form-row form-row-3">
+                <label class="form-field">
+                  <span class="label">日期 *</span>
+                  <input type="date" id="task-date" required />
+                </label>
+                <label class="form-field">
+                  <span class="label">时间 *</span>
+                  <input type="time" id="task-time" required />
+                </label>
+                <label class="form-field">
+                  <span class="label">提前提醒</span>
+                  <select id="task-remind-before">
+                    <option value="0">到点提醒</option>
+                    <option value="5">提前 5 分钟</option>
+                    <option value="10">提前 10 分钟</option>
+                    <option value="30">提前 30 分钟</option>
+                    <option value="60">提前 1 小时</option>
+                    <option value="120">提前 2 小时</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="form-row form-row-3">
+                <label class="form-field">
+                  <span class="label">类别</span>
+                  <select id="task-category">
+                    <option value="work">工作</option>
+                    <option value="study">学习</option>
+                    <option value="life">生活</option>
+                    <option value="health">健康</option>
+                    <option value="other">其他</option>
+                  </select>
+                </label>
+
+                <div class="form-field">
+                  <span class="label">重要程度</span>
+                  <div class="segmented" id="task-priority">
+                    <button type="button" data-value="normal" class="active">
+                      普通
+                    </button>
+                    <button type="button" data-value="high">重要</button>
+                    <button type="button" data-value="critical">非常重要</button>
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <span class="label">是否仅今天有效</span>
+                  <div class="segmented" id="task-scope">
+                    <button type="button" data-value="today" class="active">
+                      只看今天
+                    </button>
+                    <button type="button" data-value="global">
+                      放入全部事务
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-footer">
+                <div class="form-footer-left">
+                  <span class="dot dot-live"></span>
+                  <span class="muted-text"
+                    >任务会自动保存在浏览器本地，即使刷新页面也不会丢失。</span
+                  >
+                </div>
+                <div class="form-footer-right">
+                  <button type="button" class="btn ghost" id="btn-clear-form">
+                    清空
+                  </button>
+                  <button type="submit" class="btn primary">
+                    保存事务并设置提醒
+                  </button>
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <section class="card card-upcoming">
+            <div class="card-header">
+              <h2>即将到来的提醒</h2>
+              <div class="chip-group">
+                <span class="chip chip-soft" id="upcoming-count">0 条</span>
+              </div>
+            </div>
+            <div class="upcoming-list" id="upcoming-list">
+              <!-- 动态填充 -->
+            </div>
+            <div class="empty-state" id="upcoming-empty">
+              <div class="empty-icon"></div>
+              <div class="empty-title">当前没有即将到来的提醒</div>
+              <div class="empty-sub">
+                建议为今天或明天安排 1–3 件“最关键”的事情，并设置提醒时间。
+              </div>
+              <button
+                class="btn ghost small"
+                type="button"
+                id="scroll-to-form-btn"
+              >
+                去新建一条事务
+              </button>
+            </div>
+          </section>
+        </section>
+
+        <section class="card card-full">
+          <div class="card-header">
+            <h2>全部事务</h2>
+            <div class="filters">
+              <select id="filter-status">
+                <option value="active">只看未完成</option>
+                <option value="all">查看全部</option>
+                <option value="completed">只看已完成</option>
+              </select>
+              <select id="filter-category">
+                <option value="all">全部类别</option>
+                <option value="work">工作</option>
+                <option value="study">学习</option>
+                <option value="life">生活</option>
+                <option value="health">健康</option>
+                <option value="other">其他</option>
+              </select>
+              <button
+                type="button"
+                class="btn subtle small"
+                id="btn-clear-completed"
+              >
+                清除已完成
+              </button>
+            </div>
+          </div>
+
+          <div class="task-list" id="task-list"></div>
+          <div class="empty-state small" id="tasks-empty">
+            <div class="empty-title">还没有记录任何事务</div>
+            <div class="empty-sub">
+              可以先从 1 条最重要、最怕忘记的事情开始。
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- 提醒弹层 -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="modal-backdrop" id="reminder-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <span class="pill pill-purple">提醒</span>
+          <button class="icon-btn" id="modal-close-btn" aria-label="关闭">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-time" id="modal-time">--:--</div>
+          <div class="modal-title" id="modal-title">提醒标题</div>
+          <div class="modal-notes" id="modal-notes"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn ghost" id="modal-snooze-5">
+            再提醒我 5 分钟
+          </button>
+          <button class="btn ghost" id="modal-snooze-10">
+            再提醒我 10 分钟
+          </button>
+          <button class="btn primary" id="modal-complete">
+            已完成 / 我知道了
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <audio id="reminder-sound">
+      <source
+        src="https://assets.mixkit.co/sfx/preview/mixkit-soft-bells-ring-1084.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
